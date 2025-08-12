@@ -17,9 +17,10 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api/**").permitAll()
-                .anyRequest().authenticated()
-            );
+                .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/h2-console/**", "/api/**").permitAll()
+                .anyRequest().permitAll()
+            )
+            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable())); // Cho phép H2 console
         
         return http.build();
     }

@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý User - Exam System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            border-radius: 8px;
+            margin: 2px 0;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+        .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        .main-content {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+        }
+        .avatar-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <h4 class="text-white">
+                            <i class="bi bi-journal-check"></i>
+                            Exam System
+                        </h4>
+                    </div>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/web/">
+                                <i class="bi bi-house-door me-2"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/web/exams">
+                                <i class="bi bi-file-earmark-text me-2"></i>
+                                Quản lý Exam
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/web/questions">
+                                <i class="bi bi-question-circle me-2"></i>
+                                Quản lý Question
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/web/users">
+                                <i class="bi bi-people me-2"></i>
+                                Quản lý User
+                            </a>
+                        </li>
+                        <li class="nav-item mt-4">
+                            <hr class="text-white-50">
+                            <a class="nav-link" href="/swagger-ui/index.html" target="_blank">
+                                <i class="bi bi-code-slash me-2"></i>
+                                API Documentation
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Quản lý User</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Management Content -->
+                <div>
+            <!-- User Management Content -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <h4 class="text-primary">
+                        <i class="bi bi-people me-2"></i>
+                        Quản lý Người dùng
+                    </h4>
+                </div>
+                <div class="col-md-6 text-end">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createUserModal">
+                        <i class="bi bi-person-plus me-2"></i>
+                        Thêm người dùng mới
+                    </button>
+                </div>
+            </div>
+
+            <!-- User List -->
+            <div class="card shadow">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-white">
+                        <i class="bi bi-list-ul me-2"></i>
+                        Danh sách Người dùng
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div th:if="${#lists.isEmpty(users)}" class="text-center py-5">
+                        <i class="bi bi-people display-1 text-muted"></i>
+                        <h5 class="text-muted mt-3">Chưa có người dùng nào</h5>
+                        <p class="text-muted">Bắt đầu thêm người dùng đầu tiên!</p>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createUserModal">
+                            <i class="bi bi-person-plus me-2"></i>
+                            Thêm người dùng mới
+                        </button>
+                    </div>
+
+                    <div th:if="${!#lists.isEmpty(users)}" class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Avatar</th>
+                                    <th>Họ tên</th>
+                                    <th>Email</th>
+                                    <th>Username</th>
+                                    <th>Vai trò</th>
+                                    <th>Trạng thái</th>
+                                    <th>Ngày tạo</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="user : ${users}">
+                                    <td th:text="${user.id}">1</td>
+                                    <td>
+                                        <div class="avatar-circle">
+                                            <span th:text="${#strings.substring(user.name, 0, 1).toUpperCase()}">U</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong th:text="${user.name}">Họ tên</strong>
+                                    </td>
+                                    <td th:text="${user.email}">email@example.com</td>
+                                    <td th:text="${user.email}">email</td>
+                                    <td>
+                                        <span class="badge bg-primary" th:text="${user.role}">USER</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Đang hoạt động</span>
+                                    </td>
+                                    <td>--</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                    th:onclick="'viewUser(' + ${user.id} + ')'"
+                                                    title="Xem chi tiết">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-warning" 
+                                                    th:onclick="'editUser(' + ${user.id} + ')'"
+                                                    title="Chỉnh sửa">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                    th:onclick="'deleteUser(' + ${user.id} + ')'"
+                                                    title="Xóa">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create User Modal -->
+    <div class="modal fade" id="createUserModal" tabindex="-1" aria-labelledby="createUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createUserModalLabel">
+                        <i class="bi bi-person-plus me-2"></i>
+                        Thêm người dùng mới
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createUserForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="fullName" class="form-label">
+                                        <i class="bi bi-person me-2"></i>
+                                        Họ tên <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="fullName" name="fullName" 
+                                           placeholder="Nhập họ tên đầy đủ..." required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">
+                                        <i class="bi bi-person-badge me-2"></i>
+                                        Username <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="username" name="username" 
+                                           placeholder="Nhập username..." required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">
+                                        <i class="bi bi-envelope me-2"></i>
+                                        Email <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="email" class="form-control" id="email" name="email" 
+                                           placeholder="Nhập email..." required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">
+                                        <i class="bi bi-telephone me-2"></i>
+                                        Số điện thoại
+                                    </label>
+                                    <input type="tel" class="form-control" id="phone" name="phone" 
+                                           placeholder="Nhập số điện thoại...">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">
+                                        <i class="bi bi-lock me-2"></i>
+                                        Mật khẩu <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="password" class="form-control" id="password" name="password" 
+                                           placeholder="Nhập mật khẩu..." required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="confirmPassword" class="form-label">
+                                        <i class="bi bi-lock-fill me-2"></i>
+                                        Xác nhận mật khẩu <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" 
+                                           placeholder="Nhập lại mật khẩu..." required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="role" class="form-label">
+                                        <i class="bi bi-shield me-2"></i>
+                                        Vai trò <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" id="role" name="role" required>
+                                        <option value="">Chọn vai trò</option>
+                                        <option value="USER">Người dùng</option>
+                                        <option value="ADMIN">Quản trị viên</option>
+                                        <option value="TEACHER">Giáo viên</option>
+                                        <option value="STUDENT">Học sinh</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="isActive" class="form-label">
+                                        <i class="bi bi-toggle-on me-2"></i>
+                                        Trạng thái
+                                    </label>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="isActive" name="isActive" checked>
+                                        <label class="form-check-label" for="isActive">
+                                            Kích hoạt tài khoản
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="address" class="form-label">
+                                <i class="bi bi-geo-alt me-2"></i>
+                                Địa chỉ
+                            </label>
+                            <textarea class="form-control" id="address" name="address" rows="2" 
+                                      placeholder="Nhập địa chỉ..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-2"></i>
+                        Hủy
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="submitUser()">
+                        <i class="bi bi-check-circle me-2"></i>
+                        Thêm người dùng
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom CSS -->
+    <style>
+        .avatar-circle {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+    </style>
+
+    <!-- JavaScript cho User Management -->
+    <script>
+        function submitUser() {
+            const form = document.getElementById('createUserForm');
+            const formData = new FormData(form);
+            
+            // Validate form
+            if (!validateUserForm()) {
+                return;
+            }
+
+            // Collect form data
+            const userData = {
+                fullName: formData.get('fullName'),
+                username: formData.get('username'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                password: formData.get('password'),
+                role: formData.get('role'),
+                isActive: formData.get('isActive') === 'on',
+                address: formData.get('address')
+            };
+
+            // Show loading
+            const submitBtn = document.querySelector('#createUserModal .btn-primary');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Đang thêm...';
+            submitBtn.disabled = true;
+
+            // Submit to API
+            fetch('/api/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Có lỗi xảy ra khi thêm người dùng');
+                }
+            })
+            .then(data => {
+                alert('Thêm người dùng thành công!');
+                // Close modal and reload page
+                const modal = bootstrap.Modal.getInstance(document.getElementById('createUserModal'));
+                modal.hide();
+                location.reload();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra: ' + error.message);
+            })
+            .finally(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
+        }
+
+        function validateUserForm() {
+            const fullName = document.getElementById('fullName').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const role = document.getElementById('role').value;
+
+            if (!fullName) {
+                alert('Vui lòng nhập họ tên!');
+                document.getElementById('fullName').focus();
+                return false;
+            }
+
+            if (!username) {
+                alert('Vui lòng nhập username!');
+                document.getElementById('username').focus();
+                return false;
+            }
+
+            if (!email) {
+                alert('Vui lòng nhập email!');
+                document.getElementById('email').focus();
+                return false;
+            }
+
+            if (!password) {
+                alert('Vui lòng nhập mật khẩu!');
+                document.getElementById('password').focus();
+                return false;
+            }
+
+            if (password !== confirmPassword) {
+                alert('Mật khẩu xác nhận không khớp!');
+                document.getElementById('confirmPassword').focus();
+                return false;
+            }
+
+            if (!role) {
+                alert('Vui lòng chọn vai trò!');
+                document.getElementById('role').focus();
+                return false;
+            }
+
+            if (fullName.length < 2) {
+                alert('Họ tên phải có ít nhất 2 ký tự!');
+                document.getElementById('fullName').focus();
+                return false;
+            }
+
+            if (username.length < 3) {
+                alert('Username phải có ít nhất 3 ký tự!');
+                document.getElementById('username').focus();
+                return false;
+            }
+
+            if (password.length < 6) {
+                alert('Mật khẩu phải có ít nhất 6 ký tự!');
+                document.getElementById('password').focus();
+                return false;
+            }
+
+            return true;
+        }
+
+        function viewUser(userId) {
+            // Chuyển đến trang chi tiết user
+            window.location.href = `/web/users/${userId}`;
+        }
+
+        function editUser(userId) {
+            // Chuyển đến trang chỉnh sửa user
+            window.location.href = `/web/users/${userId}/edit`;
+        }
+
+        function deleteUser(userId) {
+            if (confirm('Bạn có chắc chắn muốn xóa người dùng này?')) {
+                // Gọi API xóa user
+                fetch(`/api/users/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Xóa người dùng thành công!');
+                        location.reload();
+                    } else {
+                        alert('Có lỗi xảy ra khi xóa người dùng!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi xóa người dùng!');
+                });
+            }
+        }
+    </script>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

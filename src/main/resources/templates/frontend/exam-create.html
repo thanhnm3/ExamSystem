@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo Exam mới - Exam System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            border-radius: 8px;
+            margin: 2px 0;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+        .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        .main-content {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <h4 class="text-white">
+                            <i class="bi bi-journal-check"></i>
+                            Exam System
+                        </h4>
+                    </div>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/web/">
+                                <i class="bi bi-house-door me-2"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/web/exams">
+                                <i class="bi bi-file-earmark-text me-2"></i>
+                                Quản lý Exam
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/web/questions">
+                                <i class="bi bi-question-circle me-2"></i>
+                                Quản lý Question
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/web/users">
+                                <i class="bi bi-people me-2"></i>
+                                Quản lý User
+                            </a>
+                        </li>
+                        <li class="nav-item mt-4">
+                            <hr class="text-white-50">
+                            <a class="nav-link" href="/swagger-ui/index.html" target="_blank">
+                                <i class="bi bi-code-slash me-2"></i>
+                                API Documentation
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Tạo Exam mới</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Create Exam Content -->
+                <div>
+            <!-- Create Exam Content -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <h4 class="text-primary">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        Tạo Bài thi mới
+                    </h4>
+                </div>
+                <div class="col-md-6 text-end">
+                    <a href="/web/exams" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left me-2"></i>
+                        Quay lại danh sách
+                    </a>
+                </div>
+            </div>
+
+            <!-- Create Exam Form -->
+            <div class="card shadow">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-white">
+                        <i class="bi bi-file-earmark-plus me-2"></i>
+                        Thông tin Bài thi
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form id="createExamForm" onsubmit="submitExam(event)">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <!-- Basic Information -->
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">
+                                        <i class="bi bi-type-bold me-2"></i>
+                                        Tiêu đề bài thi <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="title" name="title" 
+                                           placeholder="Nhập tiêu đề bài thi..." required>
+                                    <div class="form-text">Tiêu đề ngắn gọn, dễ hiểu cho bài thi</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">
+                                        <i class="bi bi-card-text me-2"></i>
+                                        Mô tả bài thi
+                                    </label>
+                                    <textarea class="form-control" id="description" name="description" rows="4" 
+                                              placeholder="Nhập mô tả chi tiết về bài thi..."></textarea>
+                                    <div class="form-text">Mô tả chi tiết về nội dung, yêu cầu của bài thi</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="timeLimit" class="form-label">
+                                                <i class="bi bi-clock me-2"></i>
+                                                Thời gian làm bài (phút) <span class="text-danger">*</span>
+                                            </label>
+                                            <select class="form-select" id="timeLimit" name="timeLimit" required>
+                                                <option value="">Chọn thời gian</option>
+                                                <option value="15">15 phút</option>
+                                                <option value="30">30 phút</option>
+                                                <option value="45">45 phút</option>
+                                                <option value="60">60 phút</option>
+                                                <option value="90">90 phút</option>
+                                                <option value="120">120 phút</option>
+                                                <option value="180">180 phút</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="isActive" class="form-label">
+                                                <i class="bi bi-toggle-on me-2"></i>
+                                                Trạng thái
+                                            </label>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="isActive" name="isActive" checked>
+                                                <label class="form-check-label" for="isActive">
+                                                    Kích hoạt bài thi
+                                                </label>
+                                            </div>
+                                            <div class="form-text">Bài thi sẽ được hiển thị cho người dùng</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <!-- Quick Settings -->
+                                <div class="card border-primary">
+                                    <div class="card-header bg-primary text-white">
+                                        <h6 class="mb-0">
+                                            <i class="bi bi-gear me-2"></i>
+                                            Cài đặt nhanh
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label class="form-label">Loại bài thi</label>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="examType" id="typePractice" value="practice" checked>
+                                                <label class="form-check-label" for="typePractice">
+                                                    Bài tập (Practice)
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="examType" id="typeExam" value="exam">
+                                                <label class="form-check-label" for="typeExam">
+                                                    Bài thi chính thức
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label">Hiển thị kết quả</label>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="showResult" name="showResult" checked>
+                                                <label class="form-check-label" for="showResult">
+                                                    Hiển thị ngay sau khi làm bài
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label">Thứ tự câu hỏi</label>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="randomOrder" name="randomOrder">
+                                                <label class="form-check-label" for="randomOrder">
+                                                    Xáo trộn thứ tự câu hỏi
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Preview -->
+                                <div class="card border-info mt-3">
+                                    <div class="card-header bg-info text-white">
+                                        <h6 class="mb-0">
+                                            <i class="bi bi-eye me-2"></i>
+                                            Xem trước
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-2">
+                                            <strong>Tiêu đề:</strong>
+                                            <div id="previewTitle" class="text-muted">Chưa có tiêu đề</div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Thời gian:</strong>
+                                            <div id="previewTime" class="text-muted">Chưa chọn</div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Trạng thái:</strong>
+                                            <div id="previewStatus" class="text-success">Đang hoạt động</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="row mt-4">
+                            <div class="col-12 text-center">
+                                <button type="button" class="btn btn-secondary me-2" onclick="resetForm()">
+                                    <i class="bi bi-arrow-clockwise me-2"></i>
+                                    Làm mới
+                                </button>
+                                <button type="button" class="btn btn-info me-2" onclick="previewExam()">
+                                    <i class="bi bi-eye me-2"></i>
+                                    Xem trước
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    Tạo bài thi
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript cho Create Exam -->
+    <script>
+        // Real-time preview
+        document.getElementById('title').addEventListener('input', function() {
+            const title = this.value || 'Chưa có tiêu đề';
+            document.getElementById('previewTitle').textContent = title;
+        });
+
+        document.getElementById('timeLimit').addEventListener('change', function() {
+            const time = this.value ? this.value + ' phút' : 'Chưa chọn';
+            document.getElementById('previewTime').textContent = time;
+        });
+
+        document.getElementById('isActive').addEventListener('change', function() {
+            const status = this.checked ? 'Đang hoạt động' : 'Không hoạt động';
+            const statusClass = this.checked ? 'text-success' : 'text-secondary';
+            const statusElement = document.getElementById('previewStatus');
+            statusElement.textContent = status;
+            statusElement.className = statusClass;
+        });
+
+        function submitExam(event) {
+            event.preventDefault();
+            
+            // Validate form
+            if (!validateForm()) {
+                return;
+            }
+
+            // Collect form data
+            const formData = {
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                timeLimit: parseInt(document.getElementById('timeLimit').value),
+                isActive: document.getElementById('isActive').checked,
+                examType: document.querySelector('input[name="examType"]:checked').value,
+                showResult: document.getElementById('showResult').checked,
+                randomOrder: document.getElementById('randomOrder').checked
+            };
+
+            // Show loading
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Đang tạo...';
+            submitBtn.disabled = true;
+
+            // Submit to API
+            fetch('/api/exams', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Có lỗi xảy ra khi tạo bài thi');
+                }
+            })
+            .then(data => {
+                alert('Tạo bài thi thành công!');
+                window.location.href = '/web/exams';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra: ' + error.message);
+            })
+            .finally(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
+        }
+
+        function validateForm() {
+            const title = document.getElementById('title').value.trim();
+            const timeLimit = document.getElementById('timeLimit').value;
+
+            if (!title) {
+                alert('Vui lòng nhập tiêu đề bài thi!');
+                document.getElementById('title').focus();
+                return false;
+            }
+
+            if (!timeLimit) {
+                alert('Vui lòng chọn thời gian làm bài!');
+                document.getElementById('timeLimit').focus();
+                return false;
+            }
+
+            if (title.length < 5) {
+                alert('Tiêu đề bài thi phải có ít nhất 5 ký tự!');
+                document.getElementById('title').focus();
+                return false;
+            }
+
+            return true;
+        }
+
+        function resetForm() {
+            if (confirm('Bạn có chắc chắn muốn làm mới form?')) {
+                document.getElementById('createExamForm').reset();
+                // Reset preview
+                document.getElementById('previewTitle').textContent = 'Chưa có tiêu đề';
+                document.getElementById('previewTime').textContent = 'Chưa chọn';
+                document.getElementById('previewStatus').textContent = 'Đang hoạt động';
+                document.getElementById('previewStatus').className = 'text-success';
+            }
+        }
+
+        function previewExam() {
+            if (!validateForm()) {
+                return;
+            }
+
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const timeLimit = document.getElementById('timeLimit').value;
+
+            const preview = `
+                <strong>Tiêu đề:</strong> ${title}<br>
+                <strong>Mô tả:</strong> ${description || 'Không có mô tả'}<br>
+                <strong>Thời gian:</strong> ${timeLimit} phút<br>
+                <strong>Trạng thái:</strong> ${document.getElementById('isActive').checked ? 'Đang hoạt động' : 'Không hoạt động'}
+            `;
+
+            alert('Xem trước bài thi:\n\n' + preview.replace(/<br>/g, '\n'));
+        }
+    </script>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

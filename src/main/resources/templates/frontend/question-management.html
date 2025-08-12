@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Question - Exam System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            border-radius: 8px;
+            margin: 2px 0;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+        .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        .main-content {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <h4 class="text-white">
+                            <i class="bi bi-journal-check"></i>
+                            Exam System
+                        </h4>
+                    </div>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/web/">
+                                <i class="bi bi-house-door me-2"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/web/exams">
+                                <i class="bi bi-file-earmark-text me-2"></i>
+                                Quản lý Exam
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/web/questions">
+                                <i class="bi bi-question-circle me-2"></i>
+                                Quản lý Question
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/web/users">
+                                <i class="bi bi-people me-2"></i>
+                                Quản lý User
+                            </a>
+                        </li>
+                        <li class="nav-item mt-4">
+                            <hr class="text-white-50">
+                            <a class="nav-link" href="/swagger-ui/index.html" target="_blank">
+                                <i class="bi bi-code-slash me-2"></i>
+                                API Documentation
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Quản lý Question</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question Management Content -->
+                <div>
+            <!-- Question Management Content -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <h4 class="text-primary">
+                        <i class="bi bi-question-circle me-2"></i>
+                        Quản lý Câu hỏi
+                    </h4>
+                </div>
+                <div class="col-md-6 text-end">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createQuestionModal">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        Thêm câu hỏi mới
+                    </button>
+                </div>
+            </div>
+
+            <!-- Question List -->
+            <div class="card shadow">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-white">
+                        <i class="bi bi-list-ul me-2"></i>
+                        Danh sách Câu hỏi
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div th:if="${#lists.isEmpty(questions)}" class="text-center py-5">
+                        <i class="bi bi-question-circle display-1 text-muted"></i>
+                        <h5 class="text-muted mt-3">Chưa có câu hỏi nào</h5>
+                        <p class="text-muted">Bắt đầu thêm câu hỏi đầu tiên cho bài thi!</p>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createQuestionModal">
+                            <i class="bi bi-plus-circle me-2"></i>
+                            Thêm câu hỏi mới
+                        </button>
+                    </div>
+
+                    <div th:if="${!#lists.isEmpty(questions)}" class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nội dung câu hỏi</th>
+                                    <th>Đáp án A</th>
+                                    <th>Đáp án B</th>
+                                    <th>Đáp án C</th>
+                                    <th>Đáp án D</th>
+                                    <th>Đáp án đúng</th>
+                                    <th>Thuộc Exam</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="question : ${questions}">
+                                    <td th:text="${question.id}">1</td>
+                                    <td>
+                                        <div class="question-content" th:text="${question.content}">Nội dung câu hỏi</div>
+                                    </td>
+                                    <td th:text="${question.optionA}">Đáp án A</td>
+                                    <td th:text="${question.optionB}">Đáp án B</td>
+                                    <td th:text="${question.optionC}">Đáp án C</td>
+                                    <td th:text="${question.optionD}">Đáp án D</td>
+                                    <td>
+                                        <span class="badge bg-success" th:text="${question.correctOption}">A</span>
+                                    </td>
+                                    <td th:text="${question.examId}">Exam ID</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                    th:onclick="'viewQuestion(' + ${question.id} + ')'"
+                                                    title="Xem chi tiết">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-warning" 
+                                                    th:onclick="'editQuestion(' + ${question.id} + ')'"
+                                                    title="Chỉnh sửa">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                    th:onclick="'deleteQuestion(' + ${question.id} + ')'"
+                                                    title="Xóa">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Question Modal -->
+    <div class="modal fade" id="createQuestionModal" tabindex="-1" aria-labelledby="createQuestionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createQuestionModalLabel">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        Thêm câu hỏi mới
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createQuestionForm">
+                        <div class="mb-3">
+                            <label for="examId" class="form-label">
+                                <i class="bi bi-file-earmark-text me-2"></i>
+                                Thuộc bài thi <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select" id="examId" name="examId" required>
+                                <option value="">Chọn bài thi</option>
+                                <!-- Sẽ được populate bằng JavaScript -->
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="questionContent" class="form-label">
+                                <i class="bi bi-question-circle me-2"></i>
+                                Nội dung câu hỏi <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control" id="questionContent" name="content" rows="3" 
+                                      placeholder="Nhập nội dung câu hỏi..." required></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="optionA" class="form-label">
+                                        <i class="bi bi-a me-2"></i>
+                                        Đáp án A <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="optionA" name="optionA" 
+                                           placeholder="Nhập đáp án A..." required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="optionB" class="form-label">
+                                        <i class="bi bi-b me-2"></i>
+                                        Đáp án B <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="optionB" name="optionB" 
+                                           placeholder="Nhập đáp án B..." required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="optionC" class="form-label">
+                                        <i class="bi bi-c me-2"></i>
+                                        Đáp án C <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="optionC" name="optionC" 
+                                           placeholder="Nhập đáp án C..." required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="optionD" class="form-label">
+                                        <i class="bi bi-d me-2"></i>
+                                        Đáp án D <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="optionD" name="optionD" 
+                                           placeholder="Nhập đáp án D..." required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="correctOption" class="form-label">
+                                <i class="bi bi-check-circle me-2"></i>
+                                Đáp án đúng <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select" id="correctOption" name="correctOption" required>
+                                <option value="">Chọn đáp án đúng</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-2"></i>
+                        Hủy
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="submitQuestion()">
+                        <i class="bi bi-check-circle me-2"></i>
+                        Thêm câu hỏi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript cho Question Management -->
+    <script>
+        // Load exams when modal opens
+        document.getElementById('createQuestionModal').addEventListener('show.bs.modal', function () {
+            loadExams();
+        });
+
+        function loadExams() {
+            fetch('/api/exams')
+                .then(response => response.json())
+                .then(exams => {
+                    const examSelect = document.getElementById('examId');
+                    examSelect.innerHTML = '<option value="">Chọn bài thi</option>';
+                    
+                    exams.forEach(exam => {
+                        const option = document.createElement('option');
+                        option.value = exam.id;
+                        option.textContent = exam.title;
+                        examSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading exams:', error);
+                });
+        }
+
+        function submitQuestion() {
+            const form = document.getElementById('createQuestionForm');
+            const formData = new FormData(form);
+            
+            // Validate form
+            if (!validateQuestionForm()) {
+                return;
+            }
+
+            // Collect form data
+            const questionData = {
+                examId: parseInt(formData.get('examId')),
+                content: formData.get('content'),
+                optionA: formData.get('optionA'),
+                optionB: formData.get('optionB'),
+                optionC: formData.get('optionC'),
+                optionD: formData.get('optionD'),
+                correctOption: formData.get('correctOption')
+            };
+
+            // Show loading
+            const submitBtn = document.querySelector('#createQuestionModal .btn-primary');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Đang thêm...';
+            submitBtn.disabled = true;
+
+            // Submit to API
+            fetch('/api/questions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(questionData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Có lỗi xảy ra khi thêm câu hỏi');
+                }
+            })
+            .then(data => {
+                alert('Thêm câu hỏi thành công!');
+                // Close modal and reload page
+                const modal = bootstrap.Modal.getInstance(document.getElementById('createQuestionModal'));
+                modal.hide();
+                location.reload();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra: ' + error.message);
+            })
+            .finally(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
+        }
+
+        function validateQuestionForm() {
+            const examId = document.getElementById('examId').value;
+            const content = document.getElementById('questionContent').value.trim();
+            const optionA = document.getElementById('optionA').value.trim();
+            const optionB = document.getElementById('optionB').value.trim();
+            const optionC = document.getElementById('optionC').value.trim();
+            const optionD = document.getElementById('optionD').value.trim();
+            const correctOption = document.getElementById('correctOption').value;
+
+            if (!examId) {
+                alert('Vui lòng chọn bài thi!');
+                document.getElementById('examId').focus();
+                return false;
+            }
+
+            if (!content) {
+                alert('Vui lòng nhập nội dung câu hỏi!');
+                document.getElementById('questionContent').focus();
+                return false;
+            }
+
+            if (!optionA || !optionB || !optionC || !optionD) {
+                alert('Vui lòng nhập đầy đủ 4 đáp án!');
+                return false;
+            }
+
+            if (!correctOption) {
+                alert('Vui lòng chọn đáp án đúng!');
+                document.getElementById('correctOption').focus();
+                return false;
+            }
+
+            if (content.length < 10) {
+                alert('Nội dung câu hỏi phải có ít nhất 10 ký tự!');
+                document.getElementById('questionContent').focus();
+                return false;
+            }
+
+            return true;
+        }
+
+        function viewQuestion(questionId) {
+            // Chuyển đến trang chi tiết question
+            window.location.href = `/web/questions/${questionId}`;
+        }
+
+        function editQuestion(questionId) {
+            // Chuyển đến trang chỉnh sửa question
+            window.location.href = `/web/questions/${questionId}/edit`;
+        }
+
+        function deleteQuestion(questionId) {
+            if (confirm('Bạn có chắc chắn muốn xóa câu hỏi này?')) {
+                // Gọi API xóa question
+                fetch(`/api/questions/${questionId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Xóa câu hỏi thành công!');
+                        location.reload();
+                    } else {
+                        alert('Có lỗi xảy ra khi xóa câu hỏi!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi xóa câu hỏi!');
+                });
+            }
+        }
+    </script>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

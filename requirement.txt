@@ -1,0 +1,92 @@
+ôn tập tất cả Java Core, Web (CDI, JPA, Hibernate, Spring) và Giải thuật cùng một lúc, thì một project thực tế tích hợp đủ kiến thức là cách học hiệu quả nhất.
+
+🎯 Đề xuất project: Hệ thống quản lý kỳ thi trực tuyến (Online Exam System)
+✅ Mục tiêu:
+Xây dựng 1 ứng dụng web cho phép người dùng:
+
+Đăng ký tài khoản
+
+Làm bài trắc nghiệm
+
+Xem kết quả`
+
+Admin có thể thêm câu hỏi, quản lý bài thi
+
+🧱 Các module chính:
+Module	Chức năng chính
+User	Đăng ký, đăng nhập, xem kết quả
+Exam	Danh sách bài thi, lịch sử làm bài
+Question	Gồm nhiều câu hỏi trong bài thi
+Answer	Người dùng chọn đáp án
+Admin Panel	Thêm, sửa, xoá câu hỏi và đề thi
+
+🧩 Kỹ năng & công nghệ bạn sẽ dùng:
+Thành phần	Ứng dụng trong project
+✅ Java Core	Viết model, logic tính điểm, xử lý chuỗi...
+✅ JPA + Hibernate	Ánh xạ entity User, Exam, Question, Answer với MySQL
+✅ CDI / DI	Tiêm ExamService, UserService, QuestionService
+✅ Spring Boot	Tạo Rest API: /api/users, /api/exams, /api/questions
+✅ Validation	Ràng buộc dữ liệu khi đăng ký tài khoản hoặc tạo câu hỏi
+✅ Swagger UI	Giao diện test API trực quan
+✅ Giải thuật	Tự động chấm điểm bài làm (đối sánh đáp án), sắp xếp kết quả
+✅ Exception Handling	Trả về lỗi rõ ràng khi nhập sai, không tồn tại ID, v.v.
+
+🧑‍💻 Yêu cầu cụ thể:
+1. Java Core
+Viết class Question, User, Exam, Answer có đủ constructor, getter/setter
+
+Viết hàm tính điểm dựa trên kết quả làm bài
+
+Viết hàm sắp xếp danh sách người dùng theo điểm giảm dần
+
+2. Spring Boot + Controller/Service
+@RestController cho 4 API chính:
+
+POST /users – đăng ký
+
+GET /exams – lấy danh sách đề thi
+
+POST /answers – gửi kết quả bài thi
+
+GET /results/{userId} – xem điểm
+
+Dùng @Autowired để inject UserService, ExamService
+
+3. JPA + Entity
+Tạo các Entity sau:
+
+User(id, name, email, password)
+Exam(id, title, timeLimit)
+Question(id, examId, content, optionA, B, C, D, correctOption)
+Answer(id, userId, questionId, selectedOption)
+Result(id, userId, examId, score)
+Dùng @ManyToOne, @OneToMany cho Exam – Question, User – Answer
+
+4. Validation
+Ràng buộc:
+
+@NotBlank cho tên, email
+
+@Email cho email
+
+@Size(min=6) cho password
+
+5. Swagger UI
+Thêm dependency Swagger
+
+Hiển thị tài liệu cho các API: /users, /exams, /answers
+
+6. Giải thuật thực hành
+Hàm chấm điểm (so sánh đáp án đúng/sai): dùng HashMap<QuestionId, CorrectOption>
+
+Sắp xếp kết quả bài thi theo điểm: dùng Comparator
+
+Viết hàm sinh ngẫu nhiên đề thi (sử dụng Collections.shuffle + recursion nếu random nâng cao)
+
+
+📌 Phần mở rộng (nếu có thời gian)
+Phân quyền: Admin/User (Spring Security)
+
+Thống kê top 5 người có điểm cao nhất
+
+Giao diện React/Vue hoặc dùng Postman test

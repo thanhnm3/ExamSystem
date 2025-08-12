@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Exam System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            border-radius: 8px;
+            margin: 2px 0;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+        .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        .main-content {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <h4 class="text-white">
+                            <i class="bi bi-journal-check"></i>
+                            Exam System
+                        </h4>
+                    </div>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/web/">
+                                <i class="bi bi-house-door me-2"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/web/exams">
+                                <i class="bi bi-file-earmark-text me-2"></i>
+                                Quản lý Exam
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/web/questions">
+                                <i class="bi bi-question-circle me-2"></i>
+                                Quản lý Question
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/web/users">
+                                <i class="bi bi-people me-2"></i>
+                                Quản lý User
+                            </a>
+                        </li>
+                        <li class="nav-item mt-4">
+                            <hr class="text-white-50">
+                            <a class="nav-link" href="/swagger-ui/index.html" target="_blank">
+                                <i class="bi bi-code-slash me-2"></i>
+                                API Documentation
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Dashboard</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Content -->
+                <div>
+            <!-- Dashboard Content -->
+            <div class="row">
+                <!-- Thống kê tổng quan -->
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Tổng số Exam
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalExams}">0</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="bi bi-file-earmark-text fa-2x text-gray-300" style="font-size: 2rem; color: #4e73df;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Tổng số Question
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalQuestions}">0</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="bi bi-question-circle fa-2x text-gray-300" style="font-size: 2rem; color: #1cc88a;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        Tổng số User
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalUsers}">0</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="bi bi-people fa-2x text-gray-300" style="font-size: 2rem; color: #36b9cc;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        Trạng thái hệ thống
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        <span class="badge bg-success">Hoạt động</span>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="bi bi-check-circle fa-2x text-gray-300" style="font-size: 2rem; color: #f6c23e;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-white">
+                                <i class="bi bi-lightning"></i> Thao tác nhanh
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <a href="/web/exams/create" class="btn btn-primary btn-block w-100">
+                                        <i class="bi bi-plus-circle me-2"></i>
+                                        Tạo Exam mới
+                                    </a>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <a href="/web/questions" class="btn btn-success btn-block w-100">
+                                        <i class="bi bi-question-circle me-2"></i>
+                                        Quản lý Question
+                                    </a>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <a href="/web/users" class="btn btn-info btn-block w-100">
+                                        <i class="bi bi-people me-2"></i>
+                                        Quản lý User
+                                    </a>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <a href="/swagger-ui/index.html" target="_blank" class="btn btn-secondary btn-block w-100">
+                                        <i class="bi bi-code-slash me-2"></i>
+                                        API Docs
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-white">
+                                <i class="bi bi-info-circle"></i> Thông tin hệ thống
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <strong>Phiên bản:</strong> 1.0.0
+                            </div>
+                            <div class="mb-3">
+                                <strong>Framework:</strong> Spring Boot 3.5.4
+                            </div>
+                            <div class="mb-3">
+                                <strong>Database:</strong> H2 (Development)
+                            </div>
+                            <div class="mb-3">
+                                <strong>Template Engine:</strong> Thymeleaf
+                            </div>
+                            <div class="mb-3">
+                                <strong>UI Framework:</strong> Bootstrap 5.3.0
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-white">
+                                <i class="bi bi-clock-history"></i> Hoạt động gần đây
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle me-2"></i>
+                                Chào mừng bạn đến với hệ thống quản lý thi trắc nghiệm!
+                            </div>
+                            <div class="alert alert-success">
+                                <i class="bi bi-check-circle me-2"></i>
+                                Hệ thống đã sẵn sàng sử dụng. Bạn có thể bắt đầu tạo exam và quản lý questions.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script>
+        // Highlight active navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

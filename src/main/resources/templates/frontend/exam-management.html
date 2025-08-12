@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Exam - Exam System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            border-radius: 8px;
+            margin: 2px 0;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+        .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        .main-content {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <h4 class="text-white">
+                            <i class="bi bi-journal-check"></i>
+                            Exam System
+                        </h4>
+                    </div>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/web/">
+                                <i class="bi bi-house-door me-2"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/web/exams">
+                                <i class="bi bi-file-earmark-text me-2"></i>
+                                Quản lý Exam
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/web/questions">
+                                <i class="bi bi-question-circle me-2"></i>
+                                Quản lý Question
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/web/users">
+                                <i class="bi bi-people me-2"></i>
+                                Quản lý User
+                            </a>
+                        </li>
+                        <li class="nav-item mt-4">
+                            <hr class="text-white-50">
+                            <a class="nav-link" href="/swagger-ui/index.html" target="_blank">
+                                <i class="bi bi-code-slash me-2"></i>
+                                API Documentation
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Quản lý Exam</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exam Management Content -->
+                <div>
+            <!-- Exam Management Content -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <h4 class="text-primary">
+                        <i class="bi bi-file-earmark-text me-2"></i>
+                        Quản lý Bài thi
+                    </h4>
+                </div>
+                <div class="col-md-6 text-end">
+                    <a href="/web/exams/create" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        Tạo Exam mới
+                    </a>
+                </div>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Tìm kiếm exam..." id="searchInput">
+                                <button class="btn btn-outline-secondary" type="button">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="statusFilter">
+                                <option value="">Tất cả trạng thái</option>
+                                <option value="true">Đang hoạt động</option>
+                                <option value="false">Không hoạt động</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="timeFilter">
+                                <option value="">Tất cả thời gian</option>
+                                <option value="30">30 phút</option>
+                                <option value="60">60 phút</option>
+                                <option value="90">90 phút</option>
+                                <option value="120">120 phút</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-outline-primary w-100" onclick="applyFilters()">
+                                <i class="bi bi-funnel me-2"></i>
+                                Lọc
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exam List -->
+            <div class="card shadow">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-white">
+                        <i class="bi bi-list-ul me-2"></i>
+                        Danh sách Bài thi
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div th:if="${#lists.isEmpty(exams)}" class="text-center py-5">
+                        <i class="bi bi-inbox display-1 text-muted"></i>
+                        <h5 class="text-muted mt-3">Chưa có bài thi nào</h5>
+                        <p class="text-muted">Bắt đầu tạo bài thi đầu tiên của bạn!</p>
+                        <a href="/web/exams/create" class="btn btn-primary">
+                            <i class="bi bi-plus-circle me-2"></i>
+                            Tạo Exam mới
+                        </a>
+                    </div>
+
+                    <div th:if="${!#lists.isEmpty(exams)}" class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tiêu đề</th>
+                                    <th>Mô tả</th>
+                                    <th>Thời gian (phút)</th>
+                                    <th>Trạng thái</th>
+                                    <th>Ngày tạo</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="exam : ${exams}">
+                                    <td th:text="${exam.id}">1</td>
+                                    <td>
+                                        <strong th:text="${exam.title}">Tiêu đề exam</strong>
+                                    </td>
+                                    <td th:text="${exam.description}">Mô tả exam</td>
+                                    <td>
+                                        <span class="badge bg-info" th:text="${exam.timeLimit} + ' phút'">60 phút</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${exam.isActive}" class="badge bg-success">Đang hoạt động</span>
+                                        <span th:unless="${exam.isActive}" class="badge bg-secondary">Không hoạt động</span>
+                                    </td>
+                                    <td th:text="${#temporals.format(exam.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2024</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                    th:onclick="'viewExam(' + ${exam.id} + ')'"
+                                                    title="Xem chi tiết">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-warning" 
+                                                    th:onclick="'editExam(' + ${exam.id} + ')'"
+                                                    title="Chỉnh sửa">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                    th:onclick="'deleteExam(' + ${exam.id} + ')'"
+                                                    title="Xóa">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div th:if="${!#lists.isEmpty(exams)}" class="d-flex justify-content-center mt-4">
+                <nav aria-label="Exam pagination">
+                    <ul class="pagination">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">Trước</a>
+                        </li>
+                        <li class="page-item active">
+                            <a class="page-link" href="#">1</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">2</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">3</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Sau</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- JavaScript cho Exam Management -->
+    <script>
+        function viewExam(examId) {
+            // Chuyển đến trang chi tiết exam
+            window.location.href = `/web/exams/${examId}`;
+        }
+
+        function editExam(examId) {
+            // Chuyển đến trang chỉnh sửa exam
+            window.location.href = `/web/exams/${examId}/edit`;
+        }
+
+        function deleteExam(examId) {
+            if (confirm('Bạn có chắc chắn muốn xóa bài thi này?')) {
+                // Gọi API xóa exam
+                fetch(`/api/exams/${examId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Xóa bài thi thành công!');
+                        location.reload();
+                    } else {
+                        alert('Có lỗi xảy ra khi xóa bài thi!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi xóa bài thi!');
+                });
+            }
+        }
+
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const timeFilter = document.getElementById('timeFilter').value;
+            
+            // Thực hiện lọc (có thể implement với AJAX hoặc reload page với params)
+            console.log('Applying filters:', { searchTerm, statusFilter, timeFilter });
+            
+            // Reload page với filter params
+            const params = new URLSearchParams();
+            if (searchTerm) params.append('search', searchTerm);
+            if (statusFilter) params.append('status', statusFilter);
+            if (timeFilter) params.append('time', timeFilter);
+            
+            const queryString = params.toString();
+            if (queryString) {
+                window.location.href = `/web/exams?${queryString}`;
+            }
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                applyFilters();
+            }
+        });
+    </script>
+</body>
+</html>
